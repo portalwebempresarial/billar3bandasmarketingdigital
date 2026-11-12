@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo: app de torneos 3 bandas</title>
+<style>
+  :root { --verde:#0f5132; --verde-claro:#1e7a4c; --oro:#e0a526; --crema:#fbf8f1; --texto:#1d2420; --gris:#5d6862; --borde:#e7e1d2; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--crema); color:var(--texto); }
+  header { background:var(--verde); color:#fff; padding:18px 20px; }
+  header h1 { margin:0; font-size:22px; }
+  header p { margin:4px 0 0; opacity:.85; font-size:14px; }
+  nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 16px; background:#fff; border-bottom:1px solid var(--borde); position:sticky; top:0; z-index:2; }
+  nav button { border:1px solid var(--borde); background:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:14px; }
+  nav button.on { background:var(--verde); color:#fff; border-color:var(--verde); }
+  main { max-width:900px; margin:0 auto; padding:20px 16px 60px; }
+  .card { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:18px; margin-bottom:16px; }
+  .card h2 { margin:0 0 12px; font-size:18px; }
+  label { display:block; font-size:13px; color:var(--gris); margin:8px 0 4px; }
+  input, select { width:100%; padding:10px; border:1px solid #cfc7b4; border-radius:8px; font-size:15px; }
+  .row { display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); }
+  .chk { display:flex; align-items:center; gap:8px; margin-top:12px; font-size:15px; }
+  .chk input { width:auto; }
+  button.primary { background:var(--verde); color:#fff; border:0; padding:11px 18px; border-radius:8px; font-weight:700; cursor:pointer; margin-top:12px; font-size:15px; text-decoration:none; display:inline-block; }
+  button.primary:hover { background:var(--verde-claro); }
+  button.sec { background:#fff; border:1px solid var(--borde); padding:8px 12px; border-radius:8px; cursor:pointer; font-size:14px; }
+  button.gold { background:var(--oro); color:#1a1300; border:0; padding:11px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-size:15px; }
+  table { width:100%; border-collapse:collapse; font-size:15px; }
+  th, td { text-align:left; padding:9px 6px; border-bottom:1px solid var(--borde); }
+  .tag { display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; }
+  .ok { background:#d8f0e2; color:#0f5132; }
+  .no { background:#f7e3c2; color:#7a4d00; }
+  .stats { display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:16px; }
+  .stat { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:14px; text-align:center; }
+  .stat b { display:block; font-size:26px; color:var(--verde); }
+  .stat span { font-size:13px; color:var(--gris); }
+  .wheel-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; padding:10px 0; }
+  .wheel { width:260px; height:260px; border-radius:50%; border:6px solid var(--verde); transition:transform 3s cubic-bezier(.17,.67,.2,1); background:#eee; }
+  .pointer { width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:20px solid var(--oro); }
+  .match { border:1px solid var(--borde); border-radius:10px; padding:12px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
+  .vs { color:var(--gris); font-size:13px; }
+  .cert { border:3px double var(--oro); border-radius:12px; padding:22px; background:#fffdf5; white-space:pre-wrap; font-size:15px; line-height:1.6; }
+  .msg { font-size:13px; color:var(--gris); margin-top:6px; }
+  .manual ol li { margin-bottom:8px; line-height:1.5; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Demo: app de torneos de billar a 3 bandas</h1>
+  <p>Prueba libre, sin contraseña. Los datos se guardan solo en este navegador.</p>
+</header>
+<nav id="nav">
+  <button data-tab="ins" class="on">Inscripciones</button>
+  <button data-tab="sorteo">Sorteo</button>
+  <button data-tab="elim">Eliminatorias</button>
+  <button data-tab="tacada">Mejor tacada</button>
+  <button data-tab="cert">Certificado</button>
+  <button data-tab="manual">Manual</button>
+  <button id="reset" style="margin-left:auto;color:#a33;">Reiniciar demo</button>
+</nav>
+<main>
+
+<section id="ins">
+  <div class="stats">
+    <div class="stat"><b id="sTot">0</b><span>Inscritos</span></div>
+    <div class="stat"><b id="sApt">0</b><span>Aptos para el sorteo</span></div>
+    <div class="stat"><b id="sHora">--:--</b><span>Hora de inicio</span></div>
+  </div>
+  <div class="card">
+    <h2>Datos del torneo</h2>
+    <div class="row">
+      <div><label>Nombre del torneo</label><input id="tNombre" placeholder="Ej: Copa Otoño 2026"></div>
+      <div><label>Hora de inicio</label><input id="tHora" type="time"></div>
+    </div>
+    <button class="primary" id="saveT">Guardar datos</button>
+  </div>
+  <div class="card">
+    <h2>Registrar jugador</h2>
+    <div class="row">
+      <div><label>Nombre</label><input id="jNombre" placeholder="Nombre completo"></div>
+      <div><label>WhatsApp (opcional)</label><input id="jWa" placeholder="300 000 0000"></div>
+      <div><label>Categoría</label><select id="jCat"><option>A</option><option>B</option><option>C</option></select></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="jPago"> Pago confirmado</label>
+    <button class="primary" id="addJ">Agregar jugador</button>
+    <div class="msg" id="insMsg"></div>
+  </div>
+  <div class="card">
+    <h2>Jugadores</h2>
+    <table><thead><tr><th>Nombre</th><th>Cat.</th><th>WhatsApp</th><th>Estado</th><th></th></tr></thead><tbody id="jBody"></tbody></table>
+  </div>
+</section>
+
+<section id="sorteo" class="hidden">
+  <div class="card">
+    <h2>Sorteo de mesas</h2>
+    <p class="msg">Solo entran los jugadores con pago confirmado. Si son impares, uno pasa directo a la siguiente ronda.</p>
+    <div class="wheel-wrap">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheel"></div>
+      <button class="gold" id="spin">Girar ruleta y sortear</button>
+      <div id="sorteoOut" class="msg"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Mesas asignadas</h2>
+    <div id="mesas"><p class="msg">Aún no hay sorteo.</p></div>
+  </div>
+</section>
+
+<section id="elim" class="hidden">
+  <div class="card">
+    <h2>Eliminatorias</h2>
+    <p class="msg">Formato muerte súbita: pierde el que cae una vez. Al registrar el ganador de cada partido se arma la siguiente ronda sola.</p>
+    <div id="bracket"><p class="msg">Primero haz el sorteo.</p></div>
+  </div>
+</section>
+
+<section id="tacada" class="hidden">
+  <div class="card">
+    <h2>Registrar mejor tacada</h2>
+    <div class="row">
+      <div><label>Jugador</label><select id="tJug"></select></div>
+      <div><label>Carambolas en la tacada</label><input id="tCar" type="number" min="1" placeholder="Ej: 9"></div>
+    </div>
+    <button class="primary" id="addTac">Guardar tacada</button>
+    <div class="msg" id="tacMsg"></div>
+  </div>
+  <div class="card">
+    <h2>Récords del torneo</h2>
+    <table><thead><tr><th>Jugador</th><th>Carambolas</th></tr></thead><tbody id="tacBody"></tbody></table>
+  </div>
+</section>
+
+<section id="cert" class="hidden">
+  <div class="card">
+    <h2>Certificado del campeón</h2>
+    <p class="msg">Se genera cuando queda un solo jugador en pie en las eliminatorias.</p>
+    <div id="certOut" class="cert">Aún no hay campeón.</div>
+    <button class="primary" id="copyCert">Copiar texto</button>
+    <a id="waCert" class="primary" style="display:none;" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+  </div>
+</section>
+
+<section id="manual" class="hidden">
+  <div class="card manual">
+    <h2>Manual de uso</h2>
+    <ol>
+      <li><b>Datos del torneo:</b> escribe el nombre y la hora de inicio, y pulsa Guardar.</li>
+      <li><b>Inscripciones:</b> registra cada jugador y marca "Pago confirmado" cuando haya pagado. Solo esos jugadores entran al sorteo.</li>
+      <li><b>Sorteo:</b> pulsa Girar ruleta. La app arma las mesas con los jugadores aptos.</li>
+      <li><b>Eliminatorias:</b> registra el ganador de cada partido. La siguiente ronda aparece sola.</li>
+      <li><b>Mejor tacada:</b> guarda la mejor tacada de cada jugador. La tabla queda ordenada de mayor a menor.</li>
+      <li><b>Certificado:</b> cuando queda un campeón, genera el certificado y envíalo por WhatsApp.</li>
+      <li><b>Reiniciar demo:</b> borra todos los datos para volver a probar desde cero.</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+<script>
+var KEY = "demo-3bandas-v1";
+var S = { nombre:"", hora:"", jugadores:[], mesas:[], rondas:[], tacadas:[] };
+try { var raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e) {}
+function $(id){ return document.getElementById(id); }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+document.querySelectorAll("nav button[data-tab]").forEach(function(b){ b.onclick = function(){ showTab(b.dataset.tab); }; });
+function showTab(t){
+  document.querySelectorAll("nav button[data-tab]").forEach(function(b){ b.classList.toggle("on", b.dataset.tab === t); });
+  document.querySelectorAll("main section").forEach(function(s){ s.classList.toggle("hidden", s.id !== t); });
+  if (t === "tacada") renderTac();
+  if (t === "elim") renderElim();
+  if (t === "cert") renderCert();
+}
+
+function renderTorneo(){
+  $("tNombre").value = S.nombre; $("tHora").value = S.hora;
+  $("sHora").textContent = S.hora || "--:--";
+}
+$("saveT").onclick = function(){ S.nombre = $("tNombre").value.trim(); S.hora = $("tHora").value; save(); renderTorneo(); $("insMsg").textContent = "Datos guardados."; };
+
+function aptos(){ return S.jugadores.filter(function(j){ return j.pago; }); }
+function renderJug(){
+  $("sTot").textContent = S.jugadores.length;
+  $("sApt").textContent = aptos().length;
+  $("jBody").innerHTML = S.jugadores.map(function(j,i){
+    return "<tr><td>" + esc(j.nombre) + "</td><td>" + esc(j.cat) + "</td><td>" + esc(j.wa || "-") + "</td><td><span class='tag " + (j.pago ? "ok'>Apto" : "no'>Pendiente de pago") + "</span></td><td><button class='sec' data-i='" + i + "'>Quitar</button></td></tr>";
+  }).join("") || "<tr><td colspan='5' class='msg'>Sin jugadores todavía.</td></tr>";
+  document.querySelectorAll("#jBody button[data-i]").forEach(function(b){ b.onclick = function(){ S.jugadores.splice(+b.dataset.i,1); save(); renderJug(); }; });
+  $("tJug").innerHTML = S.jugadores.map(function(j){ return "<option>" + esc(j.nombre) + "</option>"; }).join("");
+}
+$("addJ").onclick = function(){
+  var nombre = $("jNombre").value.trim();
+  if (!nombre) { $("insMsg").textContent = "Escribe el nombre del jugador."; return; }
+  S.jugadores.push({ nombre: nombre, wa: $("jWa").value.trim(), cat: $("jCat").value, pago: $("jPago").checked });
+  $("jNombre").value = ""; $("jWa").value = ""; $("jPago").checked = false;
+  $("insMsg").textContent = "Jugador agregado.";
+  save(); renderJug();
+};
+
+var rot = 0;
+function drawWheel(names){
+  var colors = ["#1e7a4c","#e0a526","#0f5132","#c9a24a","#2f8f5f","#f0c060"];
+  var n = names.length;
+  if (!n) { $("wheel").style.background = "#eee"; return; }
+  var step = 360 / n, parts = [];
+  for (var i = 0; i < n; i++) parts.push(colors[i % colors.length] + " " + (i*step) + "deg " + ((i+1)*step) + "deg");
+  $("wheel").style.background = "conic-gradient(" + parts.join(",") + ")";
+}
+$("spin").onclick = function(){
+  var pool = aptos();
+  if (pool.length < 2) { $("sorteoOut").textContent = "Necesitas al menos 2 jugadores con pago confirmado."; return; }
+  drawWheel(pool.map(function(j){ return j.nombre; }));
+  rot += 1440 + Math.floor(Math.random()*360);
+  $("wheel").style.transform = "rotate(" + rot + "deg)";
+  setTimeout(function(){
+    var arr = pool.slice().sort(function(){ return Math.random() - 0.5; });
+    S.mesas = [];
+    for (var i = 0; i < arr.length; i += 2) {
+      S.mesas.push({ mesa: S.mesas.length + 1, a: arr[i].nombre, b: arr[i+1] ? arr[i+1].nombre : null });
+    }
+    S.rondas = [ S.mesas.map(function(m){ return { a:m.a, b:m.b, ganador: m.b ? null : m.a }; }) ];
+    save(); renderMesas();
+    $("sorteoOut").textContent = "Sorteo listo." + (arr.length % 2 ? " Un jugador pasa directo a la siguiente ronda." : "");
+  }, 3100);
+};
+function renderMesas(){
+  $("mesas").innerHTML = S.mesas.length ? S.mesas.map(function(m){
+    return "<div class='match'><b>Mesa " + m.mesa + "</b><span>" + esc(m.a) + " vs " + (m.b ? esc(m.b) : "<i>pasa directo</i>") + "</span></div>";
+  }).join("") : "<p class='msg'>Aún no hay sorteo.</p>";
+}
+
+function avanzar(){
+  while (true) {
+    var last = S.rondas[S.rondas.length-1];
+    if (!last || last.some(function(m){ return m.b && !m.ganador; })) break;
+    var pasan = last.map(function(m){ return m.ganador; }).filter(Boolean);
+    if (pasan.length <= 1) break;
+    var next = [];
+    for (var i = 0; i < pasan.length; i += 2) next.push({ a: pasan[i], b: pasan[i+1] || null, ganador: pasan[i+1] ? null : pasan[i] });
+    S.rondas.push(next);
+  }
+}
+function campeon(){
+  var last = S.rondas[S.rondas.length-1];
+  if (!last || last.length !== 1) return null;
+  return last[0].ganador || null;
+}
+function renderElim(){
+  if (!S.rondas.length) { $("bracket").innerHTML = "<p class='msg'>Primero haz el sorteo.</p>"; return; }
+  var html = "";
+  S.rondas.forEach(function(r, ri){
+    html += "<h3 style='margin:14px 0 8px;'>Ronda " + (ri+1) + "</h3>";
+    r.forEach(function(m, mi){
+      if (!m.b) { html += "<div class='match'><span>" + esc(m.a) + "</span><span class='msg'>pasa directo</span></div>"; return; }
+      var botones = m.ganador ? "<span class='tag ok'>Ganó " + esc(m.ganador) + "</span>" :
+        "<button class='sec' data-r='" + ri + "' data-m='" + mi + "' data-w='a'>Ganó " + esc(m.a) + "</button> <button class='sec' data-r='" + ri + "' data-m='" + mi + "' data-w='b'>Ganó " + esc(m.b) + "</button>";
+      html += "<div class='match'><span>" + esc(m.a) + " <span class='vs'>vs</span> " + esc(m.b) + "</span><span>" + botones + "</span></div>";
+    });
+  });
+  var c = campeon();
+  if (c) html += "<p style='font-weight:700;color:#0f5132;'>Campeón: " + esc(c) + "</p>";
+  $("bracket").innerHTML = html;
+  document.querySelectorAll("#bracket button[data-r]").forEach(function(b){ b.onclick = function(){
+    var m = S.rondas[+b.dataset.r][+b.dataset.m];
+    m.ganador = b.dataset.w === "a" ? m.a : m.b;
+    avanzar(); save(); renderElim(); renderCert();
+  }; });
+}
+
+function renderTac(){
+  renderJug();
+  var orden = S.tacadas.slice().sort(function(x,y){ return y.car - x.car; });
+  $("tacBody").innerHTML = orden.map(function(t,i){ return "<tr><td>" + (i===0 ? "<b>★ </b>" : "") + esc(t.jugador) + "</td><td>" + t.car + "</td></tr>"; }).join("") || "<tr><td colspan='2' class='msg'>Sin tacadas registradas.</td></tr>";
+}
+$("addTac").onclick = function(){
+  var jugador = $("tJug").value, car = parseInt($("tCar").value, 10);
+  if (!jugador || !car || car < 1) { $("tacMsg").textContent = "Elige un jugador y escribe las carambolas."; return; }
+  S.tacadas.push({ jugador: jugador, car: car }); $("tCar").value = "";
+  $("tacMsg").textContent = "Tacada guardada."; save(); renderTac();
+};
+
+function renderCert(){
+  var c = campeon();
+  if (!c) { $("certOut").textContent = "Aún no hay campeón."; $("waCert").style.display = "none"; return; }
+  var best = S.tacadas.slice().sort(function(x,y){ return y.car - x.car; })[0];
+  var txt = "CERTIFICADO DE CAMPEÓN\n\n" + c + "\n\nGanó el torneo \"" + (S.nombre || "Torneo de billar 3 bandas") + "\"" +
+    (best ? "\nMejor tacada: " + best.car + " carambolas (" + best.jugador + ")" : "") + "\n\nVerificado por la app de torneos.";
+  $("certOut").textContent = txt;
+  var jug = S.jugadores.find(function(j){ return j.nombre === c; });
+  var wa = (jug && jug.wa) ? "https://wa.me/57" + jug.wa.replace(/\D/g,"") + "?text=" : "https://wa.me/?text=";
+  $("waCert").href = wa + encodeURIComponent(txt); $("waCert").style.display = "inline-block";
+}
+$("copyCert").onclick = function(){ navigator.clipboard.writeText($("certOut").textContent).then(function(){ $("copyCert").textContent = "Copiado"; }, function(){ $("copyCert").textContent = "No se pudo copiar"; }); };
+
+$("reset").onclick = function(){ if (!confirm("¿Borrar todos los datos de la demo?")) return; S = { nombre:"", hora:"", jugadores:[], mesas:[], rondas:[], tacadas:[] }; save(); location.reload(); };
+
+renderTorneo(); renderJug(); renderMesas(); drawWheel(aptos().map(function(j){ return j.nombre; })); avanzar(); renderTac(); renderElim(); renderCert();
+</script>
+</body>
+</html>
