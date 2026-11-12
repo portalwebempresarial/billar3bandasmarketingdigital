@@ -4,68 +4,101 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Demo: app de torneos 3 bandas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --verde:#0f5132; --verde-claro:#1e7a4c; --oro:#e0a526; --crema:#fbf8f1; --texto:#1d2420; --gris:#5d6862; --borde:#e7e1d2; }
+  :root { --indigo:#4f46e5; --fucsia:#d946ef; --texto:#0f172a; --gris:#64748b; --borde:#e2e8f0; }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--crema); color:var(--texto); }
-  header { background:var(--verde); color:#fff; padding:18px 20px; }
-  header h1 { margin:0; font-size:22px; }
-  header p { margin:4px 0 0; opacity:.85; font-size:14px; }
-  nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 16px; background:#fff; border-bottom:1px solid var(--borde); position:sticky; top:0; z-index:2; }
-  nav button { border:1px solid var(--borde); background:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:14px; }
-  nav button.on { background:var(--verde); color:#fff; border-color:var(--verde); }
-  main { max-width:900px; margin:0 auto; padding:20px 16px 60px; }
-  .card { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:18px; margin-bottom:16px; }
-  .card h2 { margin:0 0 12px; font-size:18px; }
-  label { display:block; font-size:13px; color:var(--gris); margin:8px 0 4px; }
-  input, select { width:100%; padding:10px; border:1px solid #cfc7b4; border-radius:8px; font-size:15px; }
-  .row { display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); }
-  .chk { display:flex; align-items:center; gap:8px; margin-top:12px; font-size:15px; }
+  body {
+    margin:0; font-family:"Space Grotesk", system-ui, sans-serif; color:var(--texto);
+    background: radial-gradient(900px 500px at 10% -10%, rgba(79,70,229,.14), transparent 60%), radial-gradient(800px 500px at 100% 0%, rgba(217,70,239,.12), transparent 60%), #f7f8fc;
+    min-height:100vh;
+  }
+  .hero { text-align:center; padding:34px 16px 10px; }
+  .hero .badge { font-size:40px; }
+  .hero h1 { margin:6px 0 4px; font-size:30px; color:var(--indigo); }
+  .hero p { margin:0; color:var(--gris); font-size:15px; }
+  .demo-aviso {
+    margin:14px auto 0; max-width:820px; padding:12px 16px; border-radius:14px;
+    background:linear-gradient(90deg, rgba(79,70,229,.08), rgba(217,70,239,.08)); border:1px solid #e9d5ff; font-size:14px;
+  }
+  nav {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:18px auto 0; max-width:820px;
+    padding:8px; background:rgba(255,255,255,.85); border-radius:999px; box-shadow:0 12px 34px rgba(15,23,42,.06);
+    position:sticky; top:8px; z-index:5; backdrop-filter:blur(6px);
+  }
+  nav button {
+    border:0; background:transparent; padding:10px 16px; border-radius:999px; cursor:pointer;
+    font-family:inherit; font-weight:600; font-size:14px; color:var(--texto);
+  }
+  nav button.on { background:linear-gradient(90deg, var(--indigo), var(--fucsia)); color:#fff; box-shadow:0 8px 20px rgba(79,70,229,.35); }
+  nav button.reset { color:#b91c1c; }
+  main { max-width:820px; margin:0 auto; padding:18px 16px 80px; }
+  .card {
+    background:rgba(255,255,255,.9); border:1px solid #eef0f6; border-radius:20px; padding:22px;
+    margin-bottom:18px; box-shadow:0 12px 34px rgba(15,23,42,.06);
+  }
+  .card h2 { margin:0 0 14px; font-size:22px; color:var(--indigo); }
+  .stats { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:18px; }
+  .stat { background:#fff; border:1px solid #eef0f6; border-radius:18px; padding:16px; text-align:center; box-shadow:0 12px 34px rgba(15,23,42,.06); }
+  .stat b { display:block; font-size:28px; background:linear-gradient(90deg, var(--indigo), var(--fucsia)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .stat span { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); font-weight:600; }
+  label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); font-weight:600; margin:10px 0 6px; }
+  input, select {
+    width:100%; padding:12px 14px; border:1px solid var(--borde); border-radius:12px; font-family:inherit; font-size:15px; background:#fff;
+  }
+  input:focus, select:focus { outline:none; border-color:var(--indigo); box-shadow:0 0 0 3px rgba(79,70,229,.15); }
+  .row { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); }
+  .chk { display:flex; align-items:center; gap:8px; margin-top:14px; font-size:15px; text-transform:none; letter-spacing:0; color:var(--texto); font-weight:500; }
   .chk input { width:auto; }
-  button.primary { background:var(--verde); color:#fff; border:0; padding:11px 18px; border-radius:8px; font-weight:700; cursor:pointer; margin-top:12px; font-size:15px; text-decoration:none; display:inline-block; }
-  button.primary:hover { background:var(--verde-claro); }
-  button.sec { background:#fff; border:1px solid var(--borde); padding:8px 12px; border-radius:8px; cursor:pointer; font-size:14px; }
-  button.gold { background:var(--oro); color:#1a1300; border:0; padding:11px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-size:15px; }
+  .btn {
+    border:0; cursor:pointer; font-family:inherit; font-weight:700; font-size:15px; padding:12px 22px; border-radius:999px;
+    background:linear-gradient(90deg, var(--indigo), var(--fucsia)); color:#fff; box-shadow:0 8px 20px rgba(79,70,229,.35);
+    margin-top:14px; text-decoration:none; display:inline-block;
+  }
+  .btn:hover { filter:brightness(1.05); }
+  .btn.sec { background:#fff; color:var(--indigo); border:1px solid #c7d2fe; box-shadow:none; padding:8px 14px; font-size:13px; margin-top:0; }
+  .btn.wa { background:#25d366; box-shadow:0 8px 20px rgba(37,211,102,.3); }
   table { width:100%; border-collapse:collapse; font-size:15px; }
-  th, td { text-align:left; padding:9px 6px; border-bottom:1px solid var(--borde); }
-  .tag { display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; }
-  .ok { background:#d8f0e2; color:#0f5132; }
-  .no { background:#f7e3c2; color:#7a4d00; }
-  .stats { display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:16px; }
-  .stat { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:14px; text-align:center; }
-  .stat b { display:block; font-size:26px; color:var(--verde); }
-  .stat span { font-size:13px; color:var(--gris); }
-  .wheel-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; padding:10px 0; }
-  .wheel { width:260px; height:260px; border-radius:50%; border:6px solid var(--verde); transition:transform 3s cubic-bezier(.17,.67,.2,1); background:#eee; }
-  .pointer { width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:20px solid var(--oro); }
-  .match { border:1px solid var(--borde); border-radius:10px; padding:12px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
+  th, td { text-align:left; padding:10px 6px; border-bottom:1px solid #eef0f6; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); }
+  .tag { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+  .ok { background:#dcfce7; color:#166534; }
+  .no { background:#fef3c7; color:#92400e; }
+  .wheel-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; padding:12px 0; }
+  .wheel { width:260px; height:260px; border-radius:50%; border:6px solid #fff; box-shadow:0 12px 34px rgba(79,70,229,.25); transition:transform 3s cubic-bezier(.17,.67,.2,1); background:#e2e8f0; }
+  .pointer { width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:20px solid var(--fucsia); }
+  .match { border:1px solid #eef0f6; border-radius:16px; padding:14px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; background:#fff; }
   .vs { color:var(--gris); font-size:13px; }
-  .cert { border:3px double var(--oro); border-radius:12px; padding:22px; background:#fffdf5; white-space:pre-wrap; font-size:15px; line-height:1.6; }
-  .msg { font-size:13px; color:var(--gris); margin-top:6px; }
-  .manual ol li { margin-bottom:8px; line-height:1.5; }
+  .cert { border:2px solid #e9d5ff; border-radius:18px; padding:22px; background:linear-gradient(180deg,#fff,#faf5ff); white-space:pre-wrap; font-size:15px; line-height:1.6; }
+  .msg { font-size:13px; color:var(--gris); margin-top:8px; }
+  .manual ol li { margin-bottom:10px; line-height:1.55; }
   .hidden { display:none; }
+  h3.ronda { margin:16px 0 8px; font-size:15px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); }
 </style>
 </head>
 <body>
-<header>
-  <h1>Demo: app de torneos de billar a 3 bandas</h1>
-  <p>Prueba libre, sin contraseña. Los datos se guardan solo en este navegador.</p>
-</header>
+<div class="hero">
+  <div class="badge">🎱</div>
+  <h1>Club de Billar a 3 Bandas</h1>
+  <p>Demo de la app de torneos · sin contraseña</p>
+  <div class="demo-aviso"><b>Demo de prueba:</b> los datos se guardan solo en este navegador. Recorre todo sin riesgo.</div>
+</div>
 <nav id="nav">
-  <button data-tab="ins" class="on">Inscripciones</button>
-  <button data-tab="sorteo">Sorteo</button>
-  <button data-tab="elim">Eliminatorias</button>
-  <button data-tab="tacada">Mejor tacada</button>
-  <button data-tab="cert">Certificado</button>
-  <button data-tab="manual">Manual</button>
-  <button id="reset" style="margin-left:auto;color:#a33;">Reiniciar demo</button>
+  <button data-tab="ins" class="on">📝 Inscripciones</button>
+  <button data-tab="sorteo">🎯 Sorteo y mesas</button>
+  <button data-tab="elim">🏆 Eliminatorias</button>
+  <button data-tab="tacada">🎱 Mejor tacada</button>
+  <button data-tab="cert">📜 Certificado</button>
+  <button data-tab="manual">📖 Manual</button>
+  <button id="reset" class="reset">Reiniciar</button>
 </nav>
 <main>
 
 <section id="ins">
   <div class="stats">
     <div class="stat"><b id="sTot">0</b><span>Inscritos</span></div>
-    <div class="stat"><b id="sApt">0</b><span>Aptos para el sorteo</span></div>
+    <div class="stat"><b id="sApt">0</b><span>Aptos para sorteo</span></div>
     <div class="stat"><b id="sHora">--:--</b><span>Hora de inicio</span></div>
   </div>
   <div class="card">
@@ -74,21 +107,21 @@
       <div><label>Nombre del torneo</label><input id="tNombre" placeholder="Ej: Copa Otoño 2026"></div>
       <div><label>Hora de inicio</label><input id="tHora" type="time"></div>
     </div>
-    <button class="primary" id="saveT">Guardar datos</button>
+    <button class="btn" id="saveT">Guardar datos</button>
   </div>
   <div class="card">
-    <h2>Registrar jugador</h2>
+    <h2>Registro de participantes</h2>
     <div class="row">
-      <div><label>Nombre</label><input id="jNombre" placeholder="Nombre completo"></div>
+      <div><label>Nombre completo</label><input id="jNombre" placeholder="Nombre completo"></div>
       <div><label>WhatsApp (opcional)</label><input id="jWa" placeholder="300 000 0000"></div>
       <div><label>Categoría</label><select id="jCat"><option>A</option><option>B</option><option>C</option></select></div>
     </div>
-    <label class="chk"><input type="checkbox" id="jPago"> Pago confirmado</label>
-    <button class="primary" id="addJ">Agregar jugador</button>
+    <label class="chk"><input type="checkbox" id="jPago"> Pago confirmado por la administración</label>
+    <button class="btn" id="addJ">Agregar participante</button>
     <div class="msg" id="insMsg"></div>
   </div>
   <div class="card">
-    <h2>Jugadores</h2>
+    <h2>Participantes</h2>
     <table><thead><tr><th>Nombre</th><th>Cat.</th><th>WhatsApp</th><th>Estado</th><th></th></tr></thead><tbody id="jBody"></tbody></table>
   </div>
 </section>
@@ -96,11 +129,11 @@
 <section id="sorteo" class="hidden">
   <div class="card">
     <h2>Sorteo de mesas</h2>
-    <p class="msg">Solo entran los jugadores con pago confirmado. Si son impares, uno pasa directo a la siguiente ronda.</p>
+    <p class="msg">Solo entran los participantes con pago confirmado. Si son impares, uno pasa directo a la siguiente ronda.</p>
     <div class="wheel-wrap">
       <div class="pointer"></div>
       <div class="wheel" id="wheel"></div>
-      <button class="gold" id="spin">Girar ruleta y sortear</button>
+      <button class="btn" id="spin">Girar ruleta y sortear</button>
       <div id="sorteoOut" class="msg"></div>
     </div>
   </div>
@@ -113,7 +146,7 @@
 <section id="elim" class="hidden">
   <div class="card">
     <h2>Eliminatorias</h2>
-    <p class="msg">Formato muerte súbita: pierde el que cae una vez. Al registrar el ganador de cada partido se arma la siguiente ronda sola.</p>
+    <p class="msg">Muerte súbita: pierde el que cae una vez. Al registrar el ganador de cada partido, la siguiente ronda aparece sola.</p>
     <div id="bracket"><p class="msg">Primero haz el sorteo.</p></div>
   </div>
 </section>
@@ -125,7 +158,7 @@
       <div><label>Jugador</label><select id="tJug"></select></div>
       <div><label>Carambolas en la tacada</label><input id="tCar" type="number" min="1" placeholder="Ej: 9"></div>
     </div>
-    <button class="primary" id="addTac">Guardar tacada</button>
+    <button class="btn" id="addTac">Guardar tacada</button>
     <div class="msg" id="tacMsg"></div>
   </div>
   <div class="card">
@@ -139,8 +172,8 @@
     <h2>Certificado del campeón</h2>
     <p class="msg">Se genera cuando queda un solo jugador en pie en las eliminatorias.</p>
     <div id="certOut" class="cert">Aún no hay campeón.</div>
-    <button class="primary" id="copyCert">Copiar texto</button>
-    <a id="waCert" class="primary" style="display:none;" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+    <button class="btn sec" id="copyCert">Copiar texto</button>
+    <a id="waCert" class="btn wa" style="display:none;" target="_blank" rel="noopener">Enviar por WhatsApp</a>
   </div>
 </section>
 
@@ -149,12 +182,12 @@
     <h2>Manual de uso</h2>
     <ol>
       <li><b>Datos del torneo:</b> escribe el nombre y la hora de inicio, y pulsa Guardar.</li>
-      <li><b>Inscripciones:</b> registra cada jugador y marca "Pago confirmado" cuando haya pagado. Solo esos jugadores entran al sorteo.</li>
-      <li><b>Sorteo:</b> pulsa Girar ruleta. La app arma las mesas con los jugadores aptos.</li>
+      <li><b>Registro:</b> agrega cada participante y marca "Pago confirmado" cuando la administración lo haya recibido. Solo esos entran al sorteo.</li>
+      <li><b>Sorteo:</b> pulsa Girar ruleta. La app arma las mesas con los participantes aptos.</li>
       <li><b>Eliminatorias:</b> registra el ganador de cada partido. La siguiente ronda aparece sola.</li>
       <li><b>Mejor tacada:</b> guarda la mejor tacada de cada jugador. La tabla queda ordenada de mayor a menor.</li>
       <li><b>Certificado:</b> cuando queda un campeón, genera el certificado y envíalo por WhatsApp.</li>
-      <li><b>Reiniciar demo:</b> borra todos los datos para volver a probar desde cero.</li>
+      <li><b>Reiniciar:</b> borra todos los datos para volver a probar desde cero.</li>
     </ol>
   </div>
 </section>
@@ -188,32 +221,32 @@ function renderJug(){
   $("sTot").textContent = S.jugadores.length;
   $("sApt").textContent = aptos().length;
   $("jBody").innerHTML = S.jugadores.map(function(j,i){
-    return "<tr><td>" + esc(j.nombre) + "</td><td>" + esc(j.cat) + "</td><td>" + esc(j.wa || "-") + "</td><td><span class='tag " + (j.pago ? "ok'>Apto" : "no'>Pendiente de pago") + "</span></td><td><button class='sec' data-i='" + i + "'>Quitar</button></td></tr>";
-  }).join("") || "<tr><td colspan='5' class='msg'>Sin jugadores todavía.</td></tr>";
+    return "<tr><td>" + esc(j.nombre) + "</td><td>" + esc(j.cat) + "</td><td>" + esc(j.wa || "-") + "</td><td><span class='tag " + (j.pago ? "ok'>Apto" : "no'>Pendiente de pago") + "</span></td><td><button class='btn sec' data-i='" + i + "'>Quitar</button></td></tr>";
+  }).join("") || "<tr><td colspan='5' class='msg'>Sin participantes todavía.</td></tr>";
   document.querySelectorAll("#jBody button[data-i]").forEach(function(b){ b.onclick = function(){ S.jugadores.splice(+b.dataset.i,1); save(); renderJug(); }; });
   $("tJug").innerHTML = S.jugadores.map(function(j){ return "<option>" + esc(j.nombre) + "</option>"; }).join("");
 }
 $("addJ").onclick = function(){
   var nombre = $("jNombre").value.trim();
-  if (!nombre) { $("insMsg").textContent = "Escribe el nombre del jugador."; return; }
+  if (!nombre) { $("insMsg").textContent = "Escribe el nombre del participante."; return; }
   S.jugadores.push({ nombre: nombre, wa: $("jWa").value.trim(), cat: $("jCat").value, pago: $("jPago").checked });
   $("jNombre").value = ""; $("jWa").value = ""; $("jPago").checked = false;
-  $("insMsg").textContent = "Jugador agregado.";
+  $("insMsg").textContent = "Participante agregado.";
   save(); renderJug();
 };
 
 var rot = 0;
 function drawWheel(names){
-  var colors = ["#1e7a4c","#e0a526","#0f5132","#c9a24a","#2f8f5f","#f0c060"];
+  var colors = ["#4f46e5","#d946ef","#818cf8","#f0abfc","#6366f1","#c026d3"];
   var n = names.length;
-  if (!n) { $("wheel").style.background = "#eee"; return; }
+  if (!n) { $("wheel").style.background = "#e2e8f0"; return; }
   var step = 360 / n, parts = [];
   for (var i = 0; i < n; i++) parts.push(colors[i % colors.length] + " " + (i*step) + "deg " + ((i+1)*step) + "deg");
   $("wheel").style.background = "conic-gradient(" + parts.join(",") + ")";
 }
 $("spin").onclick = function(){
   var pool = aptos();
-  if (pool.length < 2) { $("sorteoOut").textContent = "Necesitas al menos 2 jugadores con pago confirmado."; return; }
+  if (pool.length < 2) { $("sorteoOut").textContent = "Necesitas al menos 2 participantes con pago confirmado."; return; }
   drawWheel(pool.map(function(j){ return j.nombre; }));
   rot += 1440 + Math.floor(Math.random()*360);
   $("wheel").style.transform = "rotate(" + rot + "deg)";
@@ -225,7 +258,7 @@ $("spin").onclick = function(){
     }
     S.rondas = [ S.mesas.map(function(m){ return { a:m.a, b:m.b, ganador: m.b ? null : m.a }; }) ];
     save(); renderMesas();
-    $("sorteoOut").textContent = "Sorteo listo." + (arr.length % 2 ? " Un jugador pasa directo a la siguiente ronda." : "");
+    $("sorteoOut").textContent = "Sorteo listo." + (arr.length % 2 ? " Un participante pasa directo a la siguiente ronda." : "");
   }, 3100);
 };
 function renderMesas(){
@@ -254,16 +287,16 @@ function renderElim(){
   if (!S.rondas.length) { $("bracket").innerHTML = "<p class='msg'>Primero haz el sorteo.</p>"; return; }
   var html = "";
   S.rondas.forEach(function(r, ri){
-    html += "<h3 style='margin:14px 0 8px;'>Ronda " + (ri+1) + "</h3>";
+    html += "<h3 class='ronda'>Ronda " + (ri+1) + "</h3>";
     r.forEach(function(m, mi){
       if (!m.b) { html += "<div class='match'><span>" + esc(m.a) + "</span><span class='msg'>pasa directo</span></div>"; return; }
       var botones = m.ganador ? "<span class='tag ok'>Ganó " + esc(m.ganador) + "</span>" :
-        "<button class='sec' data-r='" + ri + "' data-m='" + mi + "' data-w='a'>Ganó " + esc(m.a) + "</button> <button class='sec' data-r='" + ri + "' data-m='" + mi + "' data-w='b'>Ganó " + esc(m.b) + "</button>";
+        "<button class='btn sec' data-r='" + ri + "' data-m='" + mi + "' data-w='a'>Ganó " + esc(m.a) + "</button> <button class='btn sec' data-r='" + ri + "' data-m='" + mi + "' data-w='b'>Ganó " + esc(m.b) + "</button>";
       html += "<div class='match'><span>" + esc(m.a) + " <span class='vs'>vs</span> " + esc(m.b) + "</span><span>" + botones + "</span></div>";
     });
   });
   var c = campeon();
-  if (c) html += "<p style='font-weight:700;color:#0f5132;'>Campeón: " + esc(c) + "</p>";
+  if (c) html += "<p style='font-weight:700;color:#4f46e5;font-size:18px;'>Campeón: " + esc(c) + "</p>";
   $("bracket").innerHTML = html;
   document.querySelectorAll("#bracket button[data-r]").forEach(function(b){ b.onclick = function(){
     var m = S.rondas[+b.dataset.r][+b.dataset.m];
