@@ -7,332 +7,362 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --indigo:#4f46e5; --fucsia:#d946ef; --texto:#0f172a; --gris:#64748b; --borde:#e2e8f0; }
-  * { box-sizing:border-box; }
-  body {
-    margin:0; font-family:"Space Grotesk", system-ui, sans-serif; color:var(--texto);
-    background: radial-gradient(900px 500px at 10% -10%, rgba(79,70,229,.14), transparent 60%), radial-gradient(800px 500px at 100% 0%, rgba(217,70,239,.12), transparent 60%), #f7f8fc;
-    min-height:100vh;
-  }
-  .hero { text-align:center; padding:34px 16px 10px; }
-  .hero .badge { font-size:40px; }
-  .hero h1 { margin:6px 0 4px; font-size:30px; color:var(--indigo); }
-  .hero p { margin:0; color:var(--gris); font-size:15px; }
-  .demo-aviso {
-    margin:14px auto 0; max-width:820px; padding:12px 16px; border-radius:14px;
-    background:linear-gradient(90deg, rgba(79,70,229,.08), rgba(217,70,239,.08)); border:1px solid #e9d5ff; font-size:14px;
-  }
-  nav {
-    display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:18px auto 0; max-width:820px;
-    padding:8px; background:rgba(255,255,255,.85); border-radius:999px; box-shadow:0 12px 34px rgba(15,23,42,.06);
-    position:sticky; top:8px; z-index:5; backdrop-filter:blur(6px);
-  }
-  nav button {
-    border:0; background:transparent; padding:10px 16px; border-radius:999px; cursor:pointer;
-    font-family:inherit; font-weight:600; font-size:14px; color:var(--texto);
-  }
-  nav button.on { background:linear-gradient(90deg, var(--indigo), var(--fucsia)); color:#fff; box-shadow:0 8px 20px rgba(79,70,229,.35); }
-  nav button.reset { color:#b91c1c; }
-  main { max-width:820px; margin:0 auto; padding:18px 16px 80px; }
-  .card {
-    background:rgba(255,255,255,.9); border:1px solid #eef0f6; border-radius:20px; padding:22px;
-    margin-bottom:18px; box-shadow:0 12px 34px rgba(15,23,42,.06);
-  }
-  .card h2 { margin:0 0 14px; font-size:22px; color:var(--indigo); }
-  .stats { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:18px; }
-  .stat { background:#fff; border:1px solid #eef0f6; border-radius:18px; padding:16px; text-align:center; box-shadow:0 12px 34px rgba(15,23,42,.06); }
-  .stat b { display:block; font-size:28px; background:linear-gradient(90deg, var(--indigo), var(--fucsia)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .stat span { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); font-weight:600; }
-  label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); font-weight:600; margin:10px 0 6px; }
-  input, select {
-    width:100%; padding:12px 14px; border:1px solid var(--borde); border-radius:12px; font-family:inherit; font-size:15px; background:#fff;
-  }
-  input:focus, select:focus { outline:none; border-color:var(--indigo); box-shadow:0 0 0 3px rgba(79,70,229,.15); }
-  .row { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); }
-  .chk { display:flex; align-items:center; gap:8px; margin-top:14px; font-size:15px; text-transform:none; letter-spacing:0; color:var(--texto); font-weight:500; }
-  .chk input { width:auto; }
-  .btn {
-    border:0; cursor:pointer; font-family:inherit; font-weight:700; font-size:15px; padding:12px 22px; border-radius:999px;
-    background:linear-gradient(90deg, var(--indigo), var(--fucsia)); color:#fff; box-shadow:0 8px 20px rgba(79,70,229,.35);
-    margin-top:14px; text-decoration:none; display:inline-block;
-  }
-  .btn:hover { filter:brightness(1.05); }
-  .btn.sec { background:#fff; color:var(--indigo); border:1px solid #c7d2fe; box-shadow:none; padding:8px 14px; font-size:13px; margin-top:0; }
-  .btn.wa { background:#25d366; box-shadow:0 8px 20px rgba(37,211,102,.3); }
-  table { width:100%; border-collapse:collapse; font-size:15px; }
-  th, td { text-align:left; padding:10px 6px; border-bottom:1px solid #eef0f6; }
-  th { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); }
-  .tag { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
-  .ok { background:#dcfce7; color:#166534; }
-  .no { background:#fef3c7; color:#92400e; }
-  .wheel-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; padding:12px 0; }
-  .wheel { width:260px; height:260px; border-radius:50%; border:6px solid #fff; box-shadow:0 12px 34px rgba(79,70,229,.25); transition:transform 3s cubic-bezier(.17,.67,.2,1); background:#e2e8f0; }
-  .pointer { width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:20px solid var(--fucsia); }
-  .match { border:1px solid #eef0f6; border-radius:16px; padding:14px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; background:#fff; }
-  .vs { color:var(--gris); font-size:13px; }
-  .cert { border:2px solid #e9d5ff; border-radius:18px; padding:22px; background:linear-gradient(180deg,#fff,#faf5ff); white-space:pre-wrap; font-size:15px; line-height:1.6; }
-  .msg { font-size:13px; color:var(--gris); margin-top:8px; }
-  .manual ol li { margin-bottom:10px; line-height:1.55; }
-  .hidden { display:none; }
-  h3.ronda { margin:16px 0 8px; font-size:15px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); }
+:root { --indigo:#4f46e5; --fucsia:#d946ef; --texto:#0f172a; --gris:#64748b; --borde:#e2e8f0; }
+* { box-sizing:border-box; }
+body {
+margin:0; font-family:"Space Grotesk", system-ui, sans-serif; color:var(--texto);
+background: radial-gradient(900px 500px at 10% -10%, rgba(79,70,229,.14), transparent 60%), radial-gradient(800px 500px at 100% 0%, rgba(217,70,239,.12), transparent 60%), #f7f8fc;
+min-height:100vh;
+}
+.hero { text-align:center; padding:34px 16px 10px; }
+.hero .badge { font-size:40px; }
+.hero h1 { margin:6px 0 4px; font-size:30px; color:var(--indigo); }
+.hero p { margin:0; color:var(--gris); font-size:15px; }
+.demo-aviso {
+margin:14px auto 0; max-width:820px; padding:12px 16px; border-radius:14px;
+background:linear-gradient(90deg, rgba(79,70,229,.08), rgba(217,70,239,.08)); border:1px solid #e9d5ff; font-size:14px;
+}
+nav {
+display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:18px auto 0; max-width:820px;
+padding:8px; background:rgba(255,255,255,.85); border-radius:999px; box-shadow:0 12px 34px rgba(15,23,42,.06);
+position:sticky; top:8px; z-index:5; backdrop-filter:blur(6px);
+}
+nav button {
+border:0; background:transparent; padding:10px 16px; border-radius:999px; cursor:pointer;
+font-family:inherit; font-weight:600; font-size:14px; color:var(--texto);
+}
+nav button.on { background:linear-gradient(90deg, var(--indigo), var(--fucsia)); color:#fff; box-shadow:0 8px 20px rgba(79,70,229,.35); }
+nav button.reset { color:#b91c1c; }
+main { max-width:820px; margin:0 auto; padding:18px 16px 80px; }
+.card {
+background:rgba(255,255,255,.9); border:1px solid #eef0f6; border-radius:20px; padding:22px;
+margin-bottom:18px; box-shadow:0 12px 34px rgba(15,23,42,.06);
+}
+.card h2 { margin:0 0 14px; font-size:22px; color:var(--indigo); }
+.stats { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:18px; }
+.stat { background:#fff; border:1px solid #eef0f6; border-radius:18px; padding:16px; text-align:center; box-shadow:0 12px 34px rgba(15,23,42,.06); }
+.stat b { display:block; font-size:28px; background:linear-gradient(90deg, var(--indigo), var(--fucsia)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.stat span { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); font-weight:600; }
+label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); font-weight:600; margin:10px 0 6px; }
+input, select {
+width:100%; padding:12px 14px; border:1px solid var(--borde); border-radius:12px; font-family:inherit; font-size:15px; background:#fff;
+}
+input:focus, select:focus { outline:none; border-color:var(--indigo); box-shadow:0 0 0 3px rgba(79,70,229,.15); }
+.row { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); }
+.chk { display:flex; align-items:center; gap:8px; margin-top:14px; font-size:15px; text-transform:none; letter-spacing:0; color:var(--texto); font-weight:500; }
+.chk input { width:auto; }
+.btn {
+border:0; cursor:pointer; font-family:inherit; font-weight:700; font-size:15px; padding:12px 22px; border-radius:999px;
+background:linear-gradient(90deg, var(--indigo), var(--fucsia)); color:#fff; box-shadow:0 8px 20px rgba(79,70,229,.35);
+margin-top:14px; text-decoration:none; display:inline-block;
+}
+.btn:hover { filter:brightness(1.05); }
+.btn.sec { background:#fff; color:var(--indigo); border:1px solid #c7d2fe; box-shadow:none; padding:8px 14px; font-size:13px; margin-top:0; }
+.btn.wa { background:#25d366; box-shadow:0 8px 20px rgba(37,211,102,.3); }
+table { width:100%; border-collapse:collapse; font-size:15px; }
+th, td { text-align:left; padding:10px 6px; border-bottom:1px solid #eef0f6; }
+th { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); }
+.tag { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+.ok { background:#dcfce7; color:#166534; }
+.no { background:#fef3c7; color:#92400e; }
+.wheel-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; padding:12px 0; }
+.wheel { width:260px; height:260px; border-radius:50%; border:6px solid #fff; box-shadow:0 12px 34px rgba(79,70,229,.25); transition:transform 3s cubic-bezier(.17,.67,.2,1); background:#e2e8f0; }
+.pointer { width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:20px solid var(--fucsia); }
+.match { border:1px solid #eef0f6; border-radius:16px; padding:14px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; background:#fff; }
+.vs { color:var(--gris); font-size:13px; }
+.cert { border:2px solid #e9d5ff; border-radius:18px; padding:22px; background:linear-gradient(180deg,#fff,#faf5ff); white-space:pre-wrap; font-size:15px; line-height:1.6; }
+.msg { font-size:13px; color:var(--gris); margin-top:8px; }
+.manual ol li { margin-bottom:10px; line-height:1.55; }
+.hidden { display:none; }
+h3.ronda { margin:16px 0 8px; font-size:15px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); }
 </style>
 </head>
 <body>
 <div class="hero">
-  <div class="badge">🎱</div>
-  <h1>Club de Billar a 3 Bandas</h1>
-  <p>Demo de la app de torneos · sin contraseña</p>
-  <div class="demo-aviso"><b>Demo de prueba:</b> los datos se guardan solo en este navegador. Recorre todo sin riesgo.</div>
+<div class="badge">🎱</div>
+<h1>Club de Billar a 3 Bandas</h1>
+<p>Demo de la app de torneos · sin contraseña</p>
+<div class="demo-aviso"><b>Demo de prueba:</b> los datos se guardan en una base de datos de prueba. Cualquiera que abra esta página ve los mismos datos.</div>
 </div>
 <nav id="nav">
-  <button data-tab="ins" class="on">📝 Inscripciones</button>
-  <button data-tab="sorteo">🎯 Sorteo y mesas</button>
-  <button data-tab="elim">🏆 Eliminatorias</button>
-  <button data-tab="tacada">🎱 Mejor tacada</button>
-  <button data-tab="cert">📜 Certificado</button>
-  <button data-tab="manual">📖 Manual</button>
-  <button id="reset" class="reset">Reiniciar</button>
+<button data-tab="ins" class="on">📝 Inscripciones</button>
+<button data-tab="sorteo">🎯 Sorteo y mesas</button>
+<button data-tab="elim">🏆 Eliminatorias</button>
+<button data-tab="tacada">🎱 Mejor tacada</button>
+<button data-tab="cert">📜 Certificado</button>
+<button data-tab="manual">📖 Manual</button>
+<button id="reset" class="reset">Reiniciar</button>
 </nav>
 <main>
 
 <section id="ins">
-  <div class="stats">
-    <div class="stat"><b id="sTot">0</b><span>Inscritos</span></div>
-    <div class="stat"><b id="sApt">0</b><span>Aptos para sorteo</span></div>
-    <div class="stat"><b id="sHora">--:--</b><span>Hora de inicio</span></div>
-  </div>
-  <div class="card">
-    <h2>Datos del torneo</h2>
-    <div class="row">
-      <div><label>Nombre del torneo</label><input id="tNombre" placeholder="Ej: Copa Otoño 2026"></div>
-      <div><label>Hora de inicio</label><input id="tHora" type="time"></div>
-    </div>
-    <button class="btn" id="saveT">Guardar datos</button>
-  </div>
-  <div class="card">
-    <h2>Registro de participantes</h2>
-    <div class="row">
-      <div><label>Nombre completo</label><input id="jNombre" placeholder="Nombre completo"></div>
-      <div><label>WhatsApp (opcional)</label><input id="jWa" placeholder="300 000 0000"></div>
-      <div><label>Categoría</label><select id="jCat"><option>A</option><option>B</option><option>C</option></select></div>
-    </div>
-    <label class="chk"><input type="checkbox" id="jPago"> Pago confirmado por la administración</label>
-    <button class="btn" id="addJ">Agregar participante</button>
-    <div class="msg" id="insMsg"></div>
-  </div>
-  <div class="card">
-    <h2>Participantes</h2>
-    <table><thead><tr><th>Nombre</th><th>Cat.</th><th>WhatsApp</th><th>Estado</th><th></th></tr></thead><tbody id="jBody"></tbody></table>
-  </div>
+<div class="stats">
+<div class="stat"><b id="sTot">0</b><span>Inscritos</span></div>
+<div class="stat"><b id="sApt">0</b><span>Aptos para sorteo</span></div>
+<div class="stat"><b id="sHora">--:--</b><span>Hora de inicio</span></div>
+</div>
+<div class="card">
+<h2>Datos del torneo</h2>
+<div class="row">
+<div><label>Nombre del torneo</label><input id="tNombre" placeholder="Ej: Copa Otoño 2026"></div>
+<div><label>Hora de inicio</label><input id="tHora" type="time"></div>
+</div>
+<button class="btn" id="saveT">Guardar datos</button>
+</div>
+<div class="card">
+<h2>Registro de participantes</h2>
+<div class="row">
+<div><label>Nombre completo</label><input id="jNombre" placeholder="Nombre completo"></div>
+<div><label>WhatsApp (opcional)</label><input id="jWa" placeholder="300 000 0000"></div>
+<div><label>Categoría</label><select id="jCat"><option>A</option><option>B</option><option>C</option></select></div>
+</div>
+<label class="chk"><input type="checkbox" id="jPago"> Pago confirmado por la administración</label>
+<button class="btn" id="addJ">Agregar participante</button>
+<div class="msg" id="insMsg"></div>
+</div>
+<div class="card">
+<h2>Participantes</h2>
+<table><thead><tr><th>Nombre</th><th>Cat.</th><th>WhatsApp</th><th>Estado</th><th></th></tr></thead><tbody id="jBody"></tbody></table>
+</div>
 </section>
 
 <section id="sorteo" class="hidden">
-  <div class="card">
-    <h2>Sorteo de mesas</h2>
-    <p class="msg">Solo entran los participantes con pago confirmado. Si son impares, uno pasa directo a la siguiente ronda.</p>
-    <div class="wheel-wrap">
-      <div class="pointer"></div>
-      <div class="wheel" id="wheel"></div>
-      <button class="btn" id="spin">Girar ruleta y sortear</button>
-      <div id="sorteoOut" class="msg"></div>
-    </div>
-  </div>
-  <div class="card">
-    <h2>Mesas asignadas</h2>
-    <div id="mesas"><p class="msg">Aún no hay sorteo.</p></div>
-  </div>
+<div class="card">
+<h2>Sorteo de mesas</h2>
+<p class="msg">Solo entran los participantes con pago confirmado. Si son impares, uno pasa directo a la siguiente ronda.</p>
+<div class="wheel-wrap">
+<div class="pointer"></div>
+<div class="wheel" id="wheel"></div>
+<button class="btn" id="spin">Girar ruleta y sortear</button>
+<div id="sorteoOut" class="msg"></div>
+</div>
+</div>
+<div class="card">
+<h2>Mesas asignadas</h2>
+<div id="mesas"><p class="msg">Aún no hay sorteo.</p></div>
+</div>
 </section>
 
 <section id="elim" class="hidden">
-  <div class="card">
-    <h2>Eliminatorias</h2>
-    <p class="msg">Muerte súbita: pierde el que cae una vez. Al registrar el ganador de cada partido, la siguiente ronda aparece sola.</p>
-    <div id="bracket"><p class="msg">Primero haz el sorteo.</p></div>
-  </div>
+<div class="card">
+<h2>Eliminatorias</h2>
+<p class="msg">Muerte súbita: pierde el que cae una vez. Al registrar el ganador de cada partido, la siguiente ronda aparece sola.</p>
+<div id="bracket"><p class="msg">Primero haz el sorteo.</p></div>
+</div>
 </section>
 
 <section id="tacada" class="hidden">
-  <div class="card">
-    <h2>Registrar mejor tacada</h2>
-    <div class="row">
-      <div><label>Jugador</label><select id="tJug"></select></div>
-      <div><label>Carambolas en la tacada</label><input id="tCar" type="number" min="1" placeholder="Ej: 9"></div>
-    </div>
-    <button class="btn" id="addTac">Guardar tacada</button>
-    <div class="msg" id="tacMsg"></div>
-  </div>
-  <div class="card">
-    <h2>Récords del torneo</h2>
-    <table><thead><tr><th>Jugador</th><th>Carambolas</th></tr></thead><tbody id="tacBody"></tbody></table>
-  </div>
+<div class="card">
+<h2>Registrar mejor tacada</h2>
+<div class="row">
+<div><label>Jugador</label><select id="tJug"></select></div>
+<div><label>Carambolas en la tacada</label><input id="tCar" type="number" min="1" placeholder="Ej: 9"></div>
+</div>
+<button class="btn" id="addTac">Guardar tacada</button>
+<div class="msg" id="tacMsg"></div>
+</div>
+<div class="card">
+<h2>Récords del torneo</h2>
+<table><thead><tr><th>Jugador</th><th>Carambolas</th></tr></thead><tbody id="tacBody"></tbody></table>
+</div>
 </section>
 
 <section id="cert" class="hidden">
-  <div class="card">
-    <h2>Certificado del campeón</h2>
-    <p class="msg">Se genera cuando queda un solo jugador en pie en las eliminatorias.</p>
-    <div id="certOut" class="cert">Aún no hay campeón.</div>
-    <button class="btn sec" id="copyCert">Copiar texto</button>
-    <a id="waCert" class="btn wa" style="display:none;" target="_blank" rel="noopener">Enviar por WhatsApp</a>
-  </div>
+<div class="card">
+<h2>Certificado del campeón</h2>
+<p class="msg">Se genera cuando queda un solo jugador en pie en las eliminatorias.</p>
+<div id="certOut" class="cert">Aún no hay campeón.</div>
+<button class="btn sec" id="copyCert">Copiar texto</button>
+<a id="waCert" class="btn wa" style="display:none;" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+</div>
 </section>
 
 <section id="manual" class="hidden">
-  <div class="card manual">
-    <h2>Manual de uso</h2>
-    <ol>
-      <li><b>Datos del torneo:</b> escribe el nombre y la hora de inicio, y pulsa Guardar.</li>
-      <li><b>Registro:</b> agrega cada participante y marca "Pago confirmado" cuando la administración lo haya recibido. Solo esos entran al sorteo.</li>
-      <li><b>Sorteo:</b> pulsa Girar ruleta. La app arma las mesas con los participantes aptos.</li>
-      <li><b>Eliminatorias:</b> registra el ganador de cada partido. La siguiente ronda aparece sola.</li>
-      <li><b>Mejor tacada:</b> guarda la mejor tacada de cada jugador. La tabla queda ordenada de mayor a menor.</li>
-      <li><b>Certificado:</b> cuando queda un campeón, genera el certificado y envíalo por WhatsApp.</li>
-      <li><b>Reiniciar:</b> borra todos los datos para volver a probar desde cero.</li>
-    </ol>
-  </div>
+<div class="card manual">
+<h2>Manual de uso</h2>
+<ol>
+<li><b>Datos del torneo:</b> escribe el nombre y la hora de inicio, y pulsa Guardar.</li>
+<li><b>Registro:</b> agrega cada participante y marca "Pago confirmado" cuando la administración lo haya recibido. Solo esos entran al sorteo.</li>
+<li><b>Sorteo:</b> pulsa Girar ruleta. La app arma las mesas con los participantes aptos.</li>
+<li><b>Eliminatorias:</b> registra el ganador de cada partido. La siguiente ronda aparece sola.</li>
+<li><b>Mejor tacada:</b> guarda la mejor tacada de cada jugador. La tabla queda ordenada de mayor a menor.</li>
+<li><b>Certificado:</b> cuando queda un campeón, genera el certificado y envíalo por WhatsApp.</li>
+<li><b>Reiniciar:</b> borra todos los datos para volver a probar desde cero.</li>
+</ol>
+</div>
 </section>
 
 </main>
-<script>
-var KEY = "demo-3bandas-v1";
-var S = { nombre:"", hora:"", jugadores:[], mesas:[], rondas:[], tacadas:[] };
-try { var raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e) {}
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+projectId: "fir-billar-3bandas",
+appId: "1:433388546806:web:7f03bd3283034ecf851ad7",
+messagingSenderId: "433388546806",
+authDomain: "fir-billar-3bandas.firebaseapp.com",
+storageBucket: "fir-billar-3bandas.firebasestorage.app"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const REF = doc(db, "demo", "estado");
+
+var VACIO = { nombre:"", hora:"", jugadores:[], mesas:[], rondas:[], tacadas:[] };
+var S = JSON.parse(JSON.stringify(VACIO));
+var listo = false;
+
 function $(id){ return document.getElementById(id); }
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+function save(){ setDoc(REF, S).catch(function(e){ $("insMsg").textContent = "No se pudo guardar: " + e.message; }); }
 function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 
 document.querySelectorAll("nav button[data-tab]").forEach(function(b){ b.onclick = function(){ showTab(b.dataset.tab); }; });
 function showTab(t){
-  document.querySelectorAll("nav button[data-tab]").forEach(function(b){ b.classList.toggle("on", b.dataset.tab === t); });
-  document.querySelectorAll("main section").forEach(function(s){ s.classList.toggle("hidden", s.id !== t); });
-  if (t === "tacada") renderTac();
-  if (t === "elim") renderElim();
-  if (t === "cert") renderCert();
+document.querySelectorAll("nav button[data-tab]").forEach(function(b){ b.classList.toggle("on", b.dataset.tab === t); });
+document.querySelectorAll("main section").forEach(function(s){ s.classList.toggle("hidden", s.id !== t); });
+if (t === "tacada") renderTac();
+if (t === "elim") renderElim();
+if (t === "cert") renderCert();
 }
 
 function renderTorneo(){
-  $("tNombre").value = S.nombre; $("tHora").value = S.hora;
-  $("sHora").textContent = S.hora || "--:--";
+$("tNombre").value = S.nombre; $("tHora").value = S.hora;
+$("sHora").textContent = S.hora || "--:--";
 }
-$("saveT").onclick = function(){ S.nombre = $("tNombre").value.trim(); S.hora = $("tHora").value; save(); renderTorneo(); $("insMsg").textContent = "Datos guardados."; };
+$("saveT").onclick = function(){ S.nombre = $("tNombre").value.trim(); S.hora = $("tHora").value; save(); $("insMsg").textContent = "Datos guardados."; };
 
 function aptos(){ return S.jugadores.filter(function(j){ return j.pago; }); }
 function renderJug(){
-  $("sTot").textContent = S.jugadores.length;
-  $("sApt").textContent = aptos().length;
-  $("jBody").innerHTML = S.jugadores.map(function(j,i){
-    return "<tr><td>" + esc(j.nombre) + "</td><td>" + esc(j.cat) + "</td><td>" + esc(j.wa || "-") + "</td><td><span class='tag " + (j.pago ? "ok'>Apto" : "no'>Pendiente de pago") + "</span></td><td><button class='btn sec' data-i='" + i + "'>Quitar</button></td></tr>";
-  }).join("") || "<tr><td colspan='5' class='msg'>Sin participantes todavía.</td></tr>";
-  document.querySelectorAll("#jBody button[data-i]").forEach(function(b){ b.onclick = function(){ S.jugadores.splice(+b.dataset.i,1); save(); renderJug(); }; });
-  $("tJug").innerHTML = S.jugadores.map(function(j){ return "<option>" + esc(j.nombre) + "</option>"; }).join("");
+$("sTot").textContent = S.jugadores.length;
+$("sApt").textContent = aptos().length;
+$("jBody").innerHTML = S.jugadores.map(function(j,i){
+return "<tr><td>" + esc(j.nombre) + "</td><td>" + esc(j.cat) + "</td><td>" + esc(j.wa || "-") + "</td><td><span class='tag " + (j.pago ? "ok'>Apto" : "no'>Pendiente de pago") + "</span></td><td><button class='btn sec' data-i='" + i + "'>Quitar</button></td></tr>";
+}).join("") || "<tr><td colspan='5' class='msg'>Sin participantes todavía.</td></tr>";
+document.querySelectorAll("#jBody button[data-i]").forEach(function(b){ b.onclick = function(){ S.jugadores.splice(+b.dataset.i,1); save(); }; });
+var prev = $("tJug").value;
+$("tJug").innerHTML = S.jugadores.map(function(j){ return "<option>" + esc(j.nombre) + "</option>"; }).join("");
+if (prev) $("tJug").value = prev;
 }
 $("addJ").onclick = function(){
-  var nombre = $("jNombre").value.trim();
-  if (!nombre) { $("insMsg").textContent = "Escribe el nombre del participante."; return; }
-  S.jugadores.push({ nombre: nombre, wa: $("jWa").value.trim(), cat: $("jCat").value, pago: $("jPago").checked });
-  $("jNombre").value = ""; $("jWa").value = ""; $("jPago").checked = false;
-  $("insMsg").textContent = "Participante agregado.";
-  save(); renderJug();
+var nombre = $("jNombre").value.trim();
+if (!nombre) { $("insMsg").textContent = "Escribe el nombre del participante."; return; }
+S.jugadores.push({ nombre: nombre, wa: $("jWa").value.trim(), cat: $("jCat").value, pago: $("jPago").checked });
+$("jNombre").value = ""; $("jWa").value = ""; $("jPago").checked = false;
+$("insMsg").textContent = "Participante agregado.";
+save();
 };
 
-var rot = 0;
 function drawWheel(names){
-  var colors = ["#4f46e5","#d946ef","#818cf8","#f0abfc","#6366f1","#c026d3"];
-  var n = names.length;
-  if (!n) { $("wheel").style.background = "#e2e8f0"; return; }
-  var step = 360 / n, parts = [];
-  for (var i = 0; i < n; i++) parts.push(colors[i % colors.length] + " " + (i*step) + "deg " + ((i+1)*step) + "deg");
-  $("wheel").style.background = "conic-gradient(" + parts.join(",") + ")";
+var colors = ["#4f46e5","#d946ef","#818cf8","#f0abfc","#6366f1","#c026d3"];
+var n = names.length;
+if (!n) { $("wheel").style.background = "#e2e8f0"; return; }
+var step = 360 / n, parts = [];
+for (var i = 0; i < n; i++) parts.push(colors[i % colors.length] + " " + (i*step) + "deg " + ((i+1)*step) + "deg");
+$("wheel").style.background = "conic-gradient(" + parts.join(",") + ")";
 }
+var rot = 0;
 $("spin").onclick = function(){
-  var pool = aptos();
-  if (pool.length < 2) { $("sorteoOut").textContent = "Necesitas al menos 2 participantes con pago confirmado."; return; }
-  drawWheel(pool.map(function(j){ return j.nombre; }));
-  rot += 1440 + Math.floor(Math.random()*360);
-  $("wheel").style.transform = "rotate(" + rot + "deg)";
-  setTimeout(function(){
-    var arr = pool.slice().sort(function(){ return Math.random() - 0.5; });
-    S.mesas = [];
-    for (var i = 0; i < arr.length; i += 2) {
-      S.mesas.push({ mesa: S.mesas.length + 1, a: arr[i].nombre, b: arr[i+1] ? arr[i+1].nombre : null });
-    }
-    S.rondas = [ S.mesas.map(function(m){ return { a:m.a, b:m.b, ganador: m.b ? null : m.a }; }) ];
-    save(); renderMesas();
-    $("sorteoOut").textContent = "Sorteo listo." + (arr.length % 2 ? " Un participante pasa directo a la siguiente ronda." : "");
-  }, 3100);
+var pool = aptos();
+if (pool.length < 2) { $("sorteoOut").textContent = "Necesitas al menos 2 participantes con pago confirmado."; return; }
+drawWheel(pool.map(function(j){ return j.nombre; }));
+rot += 1440 + Math.floor(Math.random()*360);
+$("wheel").style.transform = "rotate(" + rot + "deg)";
+setTimeout(function(){
+var arr = pool.slice().sort(function(){ return Math.random() - 0.5; });
+var mesas = [];
+for (var i = 0; i < arr.length; i += 2) {
+mesas.push({ mesa: mesas.length + 1, a: arr[i].nombre, b: arr[i+1] ? arr[i+1].nombre : null });
+}
+S.mesas = mesas;
+S.rondas = [ mesas.map(function(m){ return { a:m.a, b:m.b, ganador: m.b ? null : m.a }; }) ];
+save();
+$("sorteoOut").textContent = "Sorteo listo." + (arr.length % 2 ? " Un participante pasa directo a la siguiente ronda." : "");
+}, 3100);
 };
 function renderMesas(){
-  $("mesas").innerHTML = S.mesas.length ? S.mesas.map(function(m){
-    return "<div class='match'><b>Mesa " + m.mesa + "</b><span>" + esc(m.a) + " vs " + (m.b ? esc(m.b) : "<i>pasa directo</i>") + "</span></div>";
-  }).join("") : "<p class='msg'>Aún no hay sorteo.</p>";
+$("mesas").innerHTML = S.mesas.length ? S.mesas.map(function(m){
+return "<div class='match'><b>Mesa " + m.mesa + "</b><span>" + esc(m.a) + " vs " + (m.b ? esc(m.b) : "<i>pasa directo</i>") + "</span></div>";
+}).join("") : "<p class='msg'>Aún no hay sorteo.</p>";
 }
 
 function avanzar(){
-  while (true) {
-    var last = S.rondas[S.rondas.length-1];
-    if (!last || last.some(function(m){ return m.b && !m.ganador; })) break;
-    var pasan = last.map(function(m){ return m.ganador; }).filter(Boolean);
-    if (pasan.length <= 1) break;
-    var next = [];
-    for (var i = 0; i < pasan.length; i += 2) next.push({ a: pasan[i], b: pasan[i+1] || null, ganador: pasan[i+1] ? null : pasan[i] });
-    S.rondas.push(next);
-  }
+var cambio = false;
+while (true) {
+var last = S.rondas[S.rondas.length-1];
+if (!last || last.some(function(m){ return m.b && !m.ganador; })) break;
+var pasan = last.map(function(m){ return m.ganador; }).filter(Boolean);
+if (pasan.length <= 1) break;
+var next = [];
+for (var i = 0; i < pasan.length; i += 2) next.push({ a: pasan[i], b: pasan[i+1] || null, ganador: pasan[i+1] ? null : pasan[i] });
+S.rondas.push(next); cambio = true;
+}
+return cambio;
 }
 function campeon(){
-  var last = S.rondas[S.rondas.length-1];
-  if (!last || last.length !== 1) return null;
-  return last[0].ganador || null;
+var last = S.rondas[S.rondas.length-1];
+if (!last || last.length !== 1) return null;
+return last[0].ganador || null;
 }
 function renderElim(){
-  if (!S.rondas.length) { $("bracket").innerHTML = "<p class='msg'>Primero haz el sorteo.</p>"; return; }
-  var html = "";
-  S.rondas.forEach(function(r, ri){
-    html += "<h3 class='ronda'>Ronda " + (ri+1) + "</h3>";
-    r.forEach(function(m, mi){
-      if (!m.b) { html += "<div class='match'><span>" + esc(m.a) + "</span><span class='msg'>pasa directo</span></div>"; return; }
-      var botones = m.ganador ? "<span class='tag ok'>Ganó " + esc(m.ganador) + "</span>" :
-        "<button class='btn sec' data-r='" + ri + "' data-m='" + mi + "' data-w='a'>Ganó " + esc(m.a) + "</button> <button class='btn sec' data-r='" + ri + "' data-m='" + mi + "' data-w='b'>Ganó " + esc(m.b) + "</button>";
-      html += "<div class='match'><span>" + esc(m.a) + " <span class='vs'>vs</span> " + esc(m.b) + "</span><span>" + botones + "</span></div>";
-    });
-  });
-  var c = campeon();
-  if (c) html += "<p style='font-weight:700;color:#4f46e5;font-size:18px;'>Campeón: " + esc(c) + "</p>";
-  $("bracket").innerHTML = html;
-  document.querySelectorAll("#bracket button[data-r]").forEach(function(b){ b.onclick = function(){
-    var m = S.rondas[+b.dataset.r][+b.dataset.m];
-    m.ganador = b.dataset.w === "a" ? m.a : m.b;
-    avanzar(); save(); renderElim(); renderCert();
-  }; });
+if (!S.rondas.length) { $("bracket").innerHTML = "<p class='msg'>Primero haz el sorteo.</p>"; return; }
+var html = "";
+S.rondas.forEach(function(r, ri){
+html += "<h3 class='ronda'>Ronda " + (ri+1) + "</h3>";
+r.forEach(function(m, mi){
+if (!m.b) { html += "<div class='match'><span>" + esc(m.a) + "</span><span class='msg'>pasa directo</span></div>"; return; }
+var botones = m.ganador ? "<span class='tag ok'>Ganó " + esc(m.ganador) + "</span>" :
+"<button class='btn sec' data-r='" + ri + "' data-m='" + mi + "' data-w='a'>Ganó " + esc(m.a) + "</button> <button class='btn sec' data-r='" + ri + "' data-m='" + mi + "' data-w='b'>Ganó " + esc(m.b) + "</button>";
+html += "<div class='match'><span>" + esc(m.a) + " <span class='vs'>vs</span> " + esc(m.b) + "</span><span>" + botones + "</span></div>";
+});
+});
+var c = campeon();
+if (c) html += "<p style='font-weight:700;color:#4f46e5;font-size:18px;'>Campeón: " + esc(c) + "</p>";
+$("bracket").innerHTML = html;
+document.querySelectorAll("#bracket button[data-r]").forEach(function(b){ b.onclick = function(){
+var m = S.rondas[+b.dataset.r][+b.dataset.m];
+m.ganador = b.dataset.w === "a" ? m.a : m.b;
+avanzar(); save();
+}; });
 }
 
 function renderTac(){
-  renderJug();
-  var orden = S.tacadas.slice().sort(function(x,y){ return y.car - x.car; });
-  $("tacBody").innerHTML = orden.map(function(t,i){ return "<tr><td>" + (i===0 ? "<b>★ </b>" : "") + esc(t.jugador) + "</td><td>" + t.car + "</td></tr>"; }).join("") || "<tr><td colspan='2' class='msg'>Sin tacadas registradas.</td></tr>";
+var orden = S.tacadas.slice().sort(function(x,y){ return y.car - x.car; });
+$("tacBody").innerHTML = orden.map(function(t,i){ return "<tr><td>" + (i===0 ? "<b>★ </b>" : "") + esc(t.jugador) + "</td><td>" + t.car + "</td></tr>"; }).join("") || "<tr><td colspan='2' class='msg'>Sin tacadas registradas.</td></tr>";
 }
 $("addTac").onclick = function(){
-  var jugador = $("tJug").value, car = parseInt($("tCar").value, 10);
-  if (!jugador || !car || car < 1) { $("tacMsg").textContent = "Elige un jugador y escribe las carambolas."; return; }
-  S.tacadas.push({ jugador: jugador, car: car }); $("tCar").value = "";
-  $("tacMsg").textContent = "Tacada guardada."; save(); renderTac();
+var jugador = $("tJug").value, car = parseInt($("tCar").value, 10);
+if (!jugador || !car || car < 1) { $("tacMsg").textContent = "Elige un jugador y escribe las carambolas."; return; }
+S.tacadas.push({ jugador: jugador, car: car }); $("tCar").value = "";
+$("tacMsg").textContent = "Tacada guardada."; save();
 };
 
 function renderCert(){
-  var c = campeon();
-  if (!c) { $("certOut").textContent = "Aún no hay campeón."; $("waCert").style.display = "none"; return; }
-  var best = S.tacadas.slice().sort(function(x,y){ return y.car - x.car; })[0];
-  var txt = "CERTIFICADO DE CAMPEÓN\n\n" + c + "\n\nGanó el torneo \"" + (S.nombre || "Torneo de billar 3 bandas") + "\"" +
-    (best ? "\nMejor tacada: " + best.car + " carambolas (" + best.jugador + ")" : "") + "\n\nVerificado por la app de torneos.";
-  $("certOut").textContent = txt;
-  var jug = S.jugadores.find(function(j){ return j.nombre === c; });
-  var wa = (jug && jug.wa) ? "https://wa.me/57" + jug.wa.replace(/\D/g,"") + "?text=" : "https://wa.me/?text=";
-  $("waCert").href = wa + encodeURIComponent(txt); $("waCert").style.display = "inline-block";
+var c = campeon();
+if (!c) { $("certOut").textContent = "Aún no hay campeón."; $("waCert").style.display = "none"; return; }
+var best = S.tacadas.slice().sort(function(x,y){ return y.car - x.car; })[0];
+var txt = "CERTIFICADO DE CAMPEÓN\n\n" + c + "\n\nGanó el torneo \"" + (S.nombre || "Torneo de billar 3 bandas") + "\"" +
+(best ? "\nMejor tacada: " + best.car + " carambolas (" + best.jugador + ")" : "") + "\n\nVerificado por la app de torneos.";
+$("certOut").textContent = txt;
+var jug = S.jugadores.find(function(j){ return j.nombre === c; });
+var wa = (jug && jug.wa) ? "https://wa.me/57" + jug.wa.replace(/\D/g,"") + "?text=" : "https://wa.me/?text=";
+$("waCert").href = wa + encodeURIComponent(txt); $("waCert").style.display = "inline-block";
 }
 $("copyCert").onclick = function(){ navigator.clipboard.writeText($("certOut").textContent).then(function(){ $("copyCert").textContent = "Copiado"; }, function(){ $("copyCert").textContent = "No se pudo copiar"; }); };
 
-$("reset").onclick = function(){ if (!confirm("¿Borrar todos los datos de la demo?")) return; S = { nombre:"", hora:"", jugadores:[], mesas:[], rondas:[], tacadas:[] }; save(); location.reload(); };
+$("reset").onclick = function(){ if (!confirm("¿Borrar todos los datos de la demo?")) return; S = JSON.parse(JSON.stringify(VACIO)); save(); };
 
-renderTorneo(); renderJug(); renderMesas(); drawWheel(aptos().map(function(j){ return j.nombre; })); avanzar(); renderTac(); renderElim(); renderCert();
+function renderTodo(){
+renderTorneo(); renderJug(); renderMesas(); drawWheel(aptos().map(function(j){ return j.nombre; })); renderTac(); renderElim(); renderCert();
+}
+
+onSnapshot(REF, function(snap){
+var data = snap.exists() ? snap.data() : null;
+S = Object.assign(JSON.parse(JSON.stringify(VACIO)), data || {});
+if (!listo) { listo = true; if (avanzar()) save(); }
+renderTodo();
+}, function(e){ $("insMsg").textContent = "Error de conexión con la base de datos: " + e.message; });
 </script>
 </body>
 </html>
