@@ -97,7 +97,7 @@ h3.ronda { margin:16px 0 8px; font-size:15px; text-transform:uppercase; letter-s
 
 <section id="ins">
 <div class="stats">
-<div class="stat"><b id="sTot">0</b><span>Inscritos</span></div>
+<div class="stat"><b id="sTot">0</b><span id="lblTot">Inscritos</span></div>
 <div class="stat"><b id="sApt">0</b><span>Aptos para sorteo</span></div>
 <div class="stat"><b id="sHora">--:--</b><span>Hora de inicio</span></div>
 </div>
@@ -106,13 +106,15 @@ h3.ronda { margin:16px 0 8px; font-size:15px; text-transform:uppercase; letter-s
 <div class="row">
 <div><label>Nombre del torneo</label><input id="tNombre" placeholder="Ej: Copa Otoño 2026"></div>
 <div><label>Hora de inicio</label><input id="tHora" type="time"></div>
+<div><label>Modalidad</label><select id="tMod"><option value="individual">Individual</option><option value="parejas">Parejas</option></select></div>
 </div>
 <button class="btn" id="saveT">Guardar datos</button>
 </div>
 <div class="card">
 <h2>Registro de participantes</h2>
 <div class="row">
-<div><label>Nombre completo</label><input id="jNombre" placeholder="Nombre completo"></div>
+<div><label id="lblN1">Nombre completo</label><input id="jNombre" placeholder="Nombre completo"></div>
+<div id="wrapN2" class="hidden"><label>Nombre del compañero</label><input id="jNombre2" placeholder="Nombre del compañero"></div>
 <div><label>WhatsApp (opcional)</label><input id="jWa" placeholder="300 000 0000"></div>
 <div><label>Categoría</label><select id="jCat"><option>A</option><option>B</option><option>C</option></select></div>
 </div>
@@ -121,8 +123,8 @@ h3.ronda { margin:16px 0 8px; font-size:15px; text-transform:uppercase; letter-s
 <div class="msg" id="insMsg"></div>
 </div>
 <div class="card">
-<h2>Participantes</h2>
-<table><thead><tr><th>Nombre</th><th>Cat.</th><th>WhatsApp</th><th>Estado</th><th></th></tr></thead><tbody id="jBody"></tbody></table>
+<h2 id="lblTabla">Participantes</h2>
+<table><thead><tr><th id="thNombre">Nombre</th><th>Cat.</th><th>WhatsApp</th><th>Estado</th><th></th></tr></thead><tbody id="jBody"></tbody></table>
 </div>
 </section>
 
@@ -155,7 +157,7 @@ h3.ronda { margin:16px 0 8px; font-size:15px; text-transform:uppercase; letter-s
 <div class="card">
 <h2>Registrar mejor tacada</h2>
 <div class="row">
-<div><label>Jugador</label><select id="tJug"></select></div>
+<div><label id="lblJug">Jugador</label><select id="tJug"></select></div>
 <div><label>Carambolas en la tacada</label><input id="tCar" type="number" min="1" placeholder="Ej: 9"></div>
 </div>
 <button class="btn" id="addTac">Guardar tacada</button>
@@ -181,11 +183,12 @@ h3.ronda { margin:16px 0 8px; font-size:15px; text-transform:uppercase; letter-s
 <div class="card manual">
 <h2>Manual de uso</h2>
 <ol>
-<li><b>Datos del torneo:</b> escribe el nombre y la hora de inicio, y pulsa Guardar.</li>
+<li><b>Datos del torneo:</b> escribe el nombre, la hora de inicio y la modalidad, y pulsa Guardar.</li>
+<li><b>Modalidad:</b> en Individual se registra cada jugador. En Parejas se registran los dos nombres y la pareja entra al sorteo como una sola unidad.</li>
 <li><b>Registro:</b> agrega cada participante y marca "Pago confirmado" cuando la administración lo haya recibido. Solo esos entran al sorteo.</li>
 <li><b>Sorteo:</b> pulsa Girar ruleta. La app arma las mesas con los participantes aptos.</li>
 <li><b>Eliminatorias:</b> registra el ganador de cada partido. La siguiente ronda aparece sola.</li>
-<li><b>Mejor tacada:</b> guarda la mejor tacada de cada jugador. La tabla queda ordenada de mayor a menor.</li>
+<li><b>Mejor tacada:</b> guarda la mejor tacada de cada jugador o pareja. La tabla queda ordenada de mayor a menor.</li>
 <li><b>Certificado:</b> cuando queda un campeón, genera el certificado y envíalo por WhatsApp.</li>
 <li><b>Reiniciar:</b> borra todos los datos para volver a probar desde cero.</li>
 </ol>
@@ -210,13 +213,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const REF = doc(db, "demo", "estado");
 
-var VACIO = { nombre:"", hora:"", jugadores:[], mesas:[], rondas:[], tacadas:[] };
+var VACIO = { nombre:"", hora:"", modalidad:"individual", jugadores:[], mesas:[], rondas:[], tacadas:[] };
 var S = JSON.parse(JSON.stringify(VACIO));
 var listo = false;
 
 function $(id){ return document.getElementById(id); }
 function save(){ setDoc(REF, S).catch(function(e){ $("insMsg").textContent = "No se pudo guardar: " + e.message; }); }
 function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function esParejas(){ return S.modalidad === "parejas"; }
 
 document.querySelectorAll("nav button[data-tab]").forEach(function(b){ b.onclick = function(){ showTab(b.dataset.tab); }; });
 function showTab(t){
@@ -229,9 +233,18 @@ if (t === "cert") renderCert();
 
 function renderTorneo(){
 $("tNombre").value = S.nombre; $("tHora").value = S.hora;
+$("tMod").value = S.modalidad || "individual";
 $("sHora").textContent = S.hora || "--:--";
+var p = esParejas();
+$("wrapN2").classList.toggle("hidden", !p);
+$("lblN1").textContent = p ? "Nombre del jugador 1" : "Nombre completo";
+$("lblTot").textContent = p ? "Parejas inscritas" : "Inscritos";
+$("lblTabla").textContent = p ? "Parejas" : "Participantes";
+$("thNombre").textContent = p ? "Pareja" : "Nombre";
+$("lblJug").textContent = p ? "Pareja" : "Jugador";
 }
-$("saveT").onclick = function(){ S.nombre = $("tNombre").value.trim(); S.hora = $("tHora").value; save(); $("insMsg").textContent = "Datos guardados."; };
+$("saveT").onclick = function(){ S.nombre = $("tNombre").value.trim(); S.hora = $("tHora").value; S.modalidad = $("tMod").value; save(); $("insMsg").textContent = "Datos guardados."; };
+$("tMod").onchange = function(){ S.modalidad = $("tMod").value; renderTorneo(); };
 
 function aptos(){ return S.jugadores.filter(function(j){ return j.pago; }); }
 function renderJug(){
@@ -247,10 +260,15 @@ if (prev) $("tJug").value = prev;
 }
 $("addJ").onclick = function(){
 var nombre = $("jNombre").value.trim();
-if (!nombre) { $("insMsg").textContent = "Escribe el nombre del participante."; return; }
+if (esParejas()) {
+var n2 = $("jNombre2").value.trim();
+if (!nombre || !n2) { $("insMsg").textContent = "Escribe los nombres de los dos jugadores de la pareja."; return; }
+nombre = nombre + " y " + n2;
+$("jNombre2").value = "";
+} else if (!nombre) { $("insMsg").textContent = "Escribe el nombre del participante."; return; }
 S.jugadores.push({ nombre: nombre, wa: $("jWa").value.trim(), cat: $("jCat").value, pago: $("jPago").checked });
 $("jNombre").value = ""; $("jWa").value = ""; $("jPago").checked = false;
-$("insMsg").textContent = "Participante agregado.";
+$("insMsg").textContent = esParejas() ? "Pareja agregada." : "Participante agregado.";
 save();
 };
 
@@ -265,7 +283,7 @@ $("wheel").style.background = "conic-gradient(" + parts.join(",") + ")";
 var rot = 0;
 $("spin").onclick = function(){
 var pool = aptos();
-if (pool.length < 2) { $("sorteoOut").textContent = "Necesitas al menos 2 participantes con pago confirmado."; return; }
+if (pool.length < 2) { $("sorteoOut").textContent = "Necesitas al menos 2 " + (esParejas() ? "parejas" : "participantes") + " con pago confirmado."; return; }
 drawWheel(pool.map(function(j){ return j.nombre; }));
 rot += 1440 + Math.floor(Math.random()*360);
 $("wheel").style.transform = "rotate(" + rot + "deg)";
@@ -278,7 +296,7 @@ mesas.push({ mesa: mesas.length + 1, a: arr[i].nombre, b: arr[i+1] ? arr[i+1].no
 S.mesas = mesas;
 S.rondas = [ mesas.map(function(m){ return { a:m.a, b:m.b, ganador: m.b ? null : m.a }; }) ];
 save();
-$("sorteoOut").textContent = "Sorteo listo." + (arr.length % 2 ? " Un participante pasa directo a la siguiente ronda." : "");
+$("sorteoOut").textContent = "Sorteo listo." + (arr.length % 2 ? " Una " + (esParejas() ? "pareja" : "persona") + " pasa directo a la siguiente ronda." : "");
 }, 3100);
 };
 function renderMesas(){
@@ -333,7 +351,7 @@ $("tacBody").innerHTML = orden.map(function(t,i){ return "<tr><td>" + (i===0 ? "
 }
 $("addTac").onclick = function(){
 var jugador = $("tJug").value, car = parseInt($("tCar").value, 10);
-if (!jugador || !car || car < 1) { $("tacMsg").textContent = "Elige un jugador y escribe las carambolas."; return; }
+if (!jugador || !car || car < 1) { $("tacMsg").textContent = "Elige un jugador o pareja y escribe las carambolas."; return; }
 S.tacadas.push({ jugador: jugador, car: car }); $("tCar").value = "";
 $("tacMsg").textContent = "Tacada guardada."; save();
 };
